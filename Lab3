@@ -1,0 +1,132 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "dd180228-bc2f-4084-8827-1657050161ea",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Prediction: ['yes' 'yes']\n",
+      "Confusion Matrix:\n",
+      "[[0 2]\n",
+      " [0 0]]\n",
+      "Accuracy: 0.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn import preprocessing\n",
+    "from sklearn.neighbors import KNeighborsClassifier\n",
+    "from sklearn.metrics import confusion_matrix, accuracy_score\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "\n",
+    "weather = ['sunny', 'sunny', 'overcast', 'rainy', 'rainy', 'overcast', 'sunny']\n",
+    "feature1 = ['hot', 'hot', 'hot', 'mild', 'cool', 'cool', 'mild']\n",
+    "feature2 = ['high', 'high', 'high', 'normal', 'normal', 'high', 'normal']\n",
+    "play = ['no', 'no', 'yes', 'yes', 'yes', 'yes', 'no']\n",
+    "\n",
+    "le_weather = preprocessing.LabelEncoder()\n",
+    "le_feature1 = preprocessing.LabelEncoder()\n",
+    "le_feature2 = preprocessing.LabelEncoder()\n",
+    "le_play = preprocessing.LabelEncoder()\n",
+    "\n",
+    "weather_encoded = le_weather.fit_transform(weather)\n",
+    "feature1_encoded = le_feature1.fit_transform(feature1)\n",
+    "feature2_encoded = le_feature2.fit_transform(feature2)\n",
+    "play_encoded = le_play.fit_transform(play)\n",
+    "\n",
+    "features = list(zip(feature1_encoded, feature2_encoded))\n",
+    "\n",
+    "features_train, features_test, label_train, label_test = train_test_split(features, play_encoded, test_size=0.2, random_state=42)\n",
+    "\n",
+    "model = KNeighborsClassifier(n_neighbors=3, metric='euclidean')\n",
+    "model.fit(features_train, label_train)\n",
+    "\n",
+    "predicted = model.predict(features_test)\n",
+    "\n",
+    "predicted_labels = le_play.inverse_transform(predicted)\n",
+    "\n",
+    "print(\"Prediction:\", predicted_labels)\n",
+    "conf_mat = confusion_matrix(label_test, predicted)\n",
+    "\n",
+    "print(\"Confusion Matrix:\")\n",
+    "print(conf_mat)\n",
+    "\n",
+    "accuracy = accuracy_score(label_test, predicted)\n",
+    "print(\"Accuracy:\", accuracy)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "5e919555-7df6-4d33-a0bf-ac70128143a8",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Distances to query point: [(3.0, 'Good'), (3.605551275463989, 'Good'), (4.0, 'Bad'), (5.0, 'Bad')]\n",
+      "K nearest neighbors: ['Good', 'Good', 'Bad']\n",
+      "Predicted classification: Good\n"
+     ]
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "training_samples = [\n",
+    "    (7, 7, \"Bad\"),\n",
+    "    (7, 4, \"Bad\"),\n",
+    "    (3, 4, \"Good\"),\n",
+    "    (1, 4, \"Good\")\n",
+    "]\n",
+    "query_point = (3, 7)\n",
+    "K = 3\n",
+    "distances = [\n",
+    "    (np.sqrt((x1 - query_point[0]) ** 2 + (x2 - query_point[1]) ** 2), label)\n",
+    "    for x1, x2, label in training_samples\n",
+    "]\n",
+    "distances.sort()\n",
+    "nearest_neighbors = [label for _, label in distances[:K]]\n",
+    "\n",
+    "prediction = max(set(nearest_neighbors), key=nearest_neighbors.count)\n",
+    "print(\"Distances to query point:\", distances)\n",
+    "print(\"K nearest neighbors:\", nearest_neighbors)\n",
+    "print(\"Predicted classification:\", prediction)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "27683b15-201b-4fdf-8e30-b257e6d10b43",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
